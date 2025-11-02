@@ -1,7 +1,44 @@
 # syntax=render
 
 # Use a Python 3 environment
-FROM python:3.9
+FROM python:3.9-slim-buster AS builder
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the requirements file
+COPY requirements.txt .
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Install the dependencies
+RUN pip install -r requirements.txt
+
+# Copy the project files
+COPY . .
+
+# Create a non-root user
+RUN adduser --disabled-password app
+
+# Change the owner of the working directory
+RUN chown -R app:app /app
+
+# Switch to the non-root user
+USER app
+
+# Set environment variables
+ENV DJANGO_SETTINGS_MODULE=portfolio_review.settings
+ENV PYTHONUNBUFFERED=1
+
+# Expose the port
+EXPOSE 8000
+
+# Start the application
+CMD gunicorn portfolio_review.wsgi --bind 0.0.0.0:8000
 
 # Set the working directory
 WORKDIR /app

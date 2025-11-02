@@ -1,0 +1,19 @@
+# Environment
+venv/
+.env
+
+# Database
+db.sqlite3
+
+# Static files
+static/
+staticfiles/
+staticfiles/admin/
+static/style.css
+
+# Python cache
+*.pyc
+__pycache__/
+
+# Ignore nested project
+final-portfoAI-clean/

@@ -120,9 +120,16 @@ def get_review(url):
             f"Here is some scraped content from the website:\n\n{scraped_text}"
         )
         
-        response = gemini_model.generate_content(prompt)
-        review_text = response.text.strip()
-        return review_text
+        try:
+            logger.info(f"Gemini API prompt: {prompt}")
+            response = gemini_model.generate_content(prompt)
+            logger.info(f"Gemini API response: {response.text}")
+            review_text = response.text.strip()
+            return review_text
+        except Exception as e:
+            logger.error(f"Error getting review from Gemini: {e}", exc_info=True)
+            return "A generic review could not be generated at this time. Please try again later."
+
     except Exception as e:
         logger.error(f"Error getting review from Gemini: {e}", exc_info=True)
         return "Failed to generate review."

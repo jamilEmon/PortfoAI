@@ -1,0 +1,26 @@
+# syntax=render
+
+# Use a Python 3 environment
+FROM python:3.9
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the requirements file
+COPY requirements.txt .
+
+# Install the dependencies
+RUN pip install -r requirements.txt
+
+# Copy the project files
+COPY . .
+
+# Set environment variables
+ENV DJANGO_SETTINGS_MODULE=portfolio_review.settings
+ENV PYTHONUNBUFFERED=1
+
+# Expose the port
+EXPOSE 8000
+
+# Start the application
+CMD gunicorn portfolio_review.wsgi --bind 0.0.0.0:8000

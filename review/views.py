@@ -39,15 +39,21 @@ def take_screenshot(url):
     options.add_argument("--disable-dev-shm-usage")
     browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-    browser.get(url)
+    try:
+        browser.get(url)
 
-    total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
+        total_height = browser.execute_script("return document.body.parentNode.scrollHeight")
 
-    browser.set_window_size(1200, total_height)
+        browser.set_window_size(1200, total_height)
 
-    screenshot = browser.get_screenshot_as_png()
+        screenshot = browser.get_screenshot_as_png()
 
-    browser.quit()
+        browser.quit()
+    except Exception as e:
+        logger.error(f"Error taking screenshot: {e}", exc_info=True)
+        if browser:
+            browser.quit()
+        return None
 
     sanitized_url = url.replace('http://', '').replace('https://', '').replace('/', '_').replace(':', '_')
 
@@ -105,8 +111,8 @@ def scrape_website_content(url):
 def get_review(url):
     try:
         scraped_text = scrape_website_content(url)
-        if not scraped_text:
-            return "Failed to scrape website content for review."
+        if not scraped_text or len(scraped_text) < 100:
+            return "Failed to scrape sufficient website content for review."
 
         prompt = (
             f"Please provide a concise, professional, and actionable portfolio review for the website at this URL: {url}. "
@@ -146,7 +152,7 @@ def submit_url(request):
             website_review = get_review(domain) # Pass domain for text scraping
             if not website_review:
                 logger.warning(f"No review text received for domain: {domain}")
-                # Continue even if no review, but log it
+            # Continue even if no review, but log it
         except Exception as e:
             logger.error(f"Error getting review for domain {domain}: {e}", exc_info=True)
             # Continue with empty review if there's an error, but log it

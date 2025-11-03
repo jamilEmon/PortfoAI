@@ -88,3 +88,4 @@ sequenceDiagram
     python manage.py runserver
     ```
     The application will be available at `http://127.0.0.1:8000/`.
+video : https://drive.google.com/file/d/1XO-ZtyYGPMFhP_Lhog8hG16H5jkQbXBy/view
